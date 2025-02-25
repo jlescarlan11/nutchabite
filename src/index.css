@@ -1,13 +1,25 @@
+@import "https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:wght@400;700&display=swap";
 @import "tailwindcss";
+@tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, "Playfair Display", Avenir, Helvetica, Arial, sans-serif;
+
   line-height: 1.5;
   font-weight: 400;
 }
 
-* {
+body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+@media print {
+  body * {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
 }

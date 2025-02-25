@@ -1,0 +1,17 @@
+/* Recipe.module.css */
+
+/* Define the keyframes for the overlayPulse animation */
+@keyframes overlayPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Create a class that uses the overlayPulse animation */
+.overlay {
+  animation: overlayPulse 4s ease-in-out infinite;
+}
