@@ -3,11 +3,11 @@ import {
   Bars3Icon,
   XMarkIcon,
   MagnifyingGlassIcon,
-  ShoppingCartIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { HashLink } from "react-router-hash-link";
 import { useNavigate } from "react-router-dom";
+import { StoreIcon } from "lucide-react";
 
 const NavBar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -194,7 +194,7 @@ const NavBar: React.FC = () => {
                 )}
               </div>
 
-              {/* Cart Icon */}
+              {/* Store Icon */}
               <button
                 className="
                   relative
@@ -203,20 +203,10 @@ const NavBar: React.FC = () => {
                   hover:text-[var(--color-tertiary)]
                   focus:outline-none
                 "
-                aria-label="View cart"
-                onClick={() => navigate("/cart")}
+                aria-label="Order Form"
+                onClick={() => navigate("/order")}
               >
-                <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
-                <span
-                  className="
-                    absolute -top-1 -right-1 inline-flex items-center justify-center
-                    px-1 py-0.5 text-xs font-bold leading-none text-white
-                    bg-[var(--color-accent)]
-                    rounded-full transition-all duration-300 ease-in-out
-                  "
-                >
-                  3
-                </span>
+                <StoreIcon className="h-6 w-6" aria-hidden="true" />
               </button>
 
               {/* User Icon */}
