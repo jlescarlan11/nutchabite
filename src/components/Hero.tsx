@@ -22,10 +22,10 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-// Gradient overlay for better text visibility using our matcha palette
+// Gradient overlay using the new color scheme
 const gradientOverlayStyles = {
   background:
-    "linear-gradient(135deg, rgba(16, 185, 129, 0.6), rgba(244, 63, 94, 0.6))",
+    "linear-gradient(135deg, var(--color-secondary-70), var(--color-secondary-40))",
   backgroundSize: "200% 200%",
   animation: "gradientAnimation 10s ease infinite",
 };
@@ -96,7 +96,7 @@ export default function Hero() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="relative z-10 flex flex-col items-center px-4animate-fadeIn"
+        className="relative z-10 flex flex-col items-center px-4 animate-fadeIn"
       >
         <motion.div
           variants={itemVariants}
@@ -104,25 +104,25 @@ export default function Hero() {
         >
           <h1
             id="hero-heading"
-            className="text-4xl sm:text-6xl md:text-8xl font-extrabold tracking-wider drop-shadow-lg text-emerald-500"
+            className="text-4xl sm:text-6xl md:text-8xl font-extrabold tracking-wider drop-shadow-lg text-[var(--color-primary-70)]"
           >
             Nutcha Bites
           </h1>
-          <p className="text-base sm:text-lg md:text-xl font-light mt-4 drop-shadow-sm text-neutral-50">
+          <p className="text-base sm:text-lg md:text-xl font-light mt-4 drop-shadow-sm text-[var(--color-primary-50)]">
             Old-School Crunch, New-School Vibes. A Nutchalicious Bite!
           </p>
           <motion.div
             variants={itemVariants}
-            className="mt-8 px-6 py-3 hover:-translate-y-0.05 transition-all duration-300 ease-in-out hover:bg-rose-600 bg-rose-500 text-white rounded shadow-lg"
+            className="mt-8 px-6 py-3 bg-[var(--color-accent-80)] text-[var(--color-primary-70)] rounded shadow-lg transition-all duration-300 ease-in-out hover:bg-[var(--color-accent-60)] hover:scale-105"
             whileHover={{
               scale: 1.05,
-              boxShadow: "0px 0px 8px rgba(0, 0, 0, 0.2)",
+              boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
             }}
             transition={{ type: "spring", stiffness: 50 }}
           >
             <button
               onClick={() => navigate("/order")}
-              className=" font-semibold text-lg sm:text-xl "
+              className="font-semibold text-lg sm:text-xl"
             >
               Order Now
             </button>

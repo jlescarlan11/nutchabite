@@ -3,6 +3,9 @@ import recipe from "../assets/recipe.pdf";
 import styles from "./styles/Recipe.module.css";
 import recipeBackground from "../assets/heroImage.webp";
 
+/* -------------------------------------------------------------------------- */
+/*                          FadeInSection Component                           */
+/* -------------------------------------------------------------------------- */
 interface FadeInSectionProps {
   children: React.ReactNode;
   className?: string;
@@ -38,30 +41,41 @@ const FadeInSection: React.FC<FadeInSectionProps> = ({
   return (
     <div
       ref={domRef}
-      className={`${className} transition-all duration-1000 ease-out transform print:opacity-100 print:translate-y-0 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
+      className={`
+        ${className}
+        transition-all duration-1000 ease-out transform
+        print:opacity-100 print:translate-y-0
+        ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+      `}
     >
       {children}
     </div>
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                          HeroSection Component                             */
+/* -------------------------------------------------------------------------- */
 const HeroSection = () => {
   return (
     <section
       className="relative overflow-hidden"
       aria-label="Hero Section showcasing Nutcha Bites"
     >
+      {/* Background Image */}
       <img
         src={recipeBackground}
         alt="Artistic high-resolution image showcasing Nutcha Bites arranged with matcha and Iloilo bandi elements"
         className="w-full h-screen object-cover"
       />
+
+      {/* Dark Overlay (kept black for contrast) */}
       <div
-        className={`absolute inset-0 bg-black opacity-50 ${styles.overlay} `}
+        className={`absolute inset-0 bg-black opacity-50 ${styles.overlay}`}
         aria-hidden="true"
       ></div>
+
+      {/* Hero Text */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center px-4">
           <h1 className="text-5xl md:text-7xl font-bold font-sans text-white drop-shadow-lg">
@@ -76,6 +90,9 @@ const HeroSection = () => {
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                         IngredientCards Component                          */
+/* -------------------------------------------------------------------------- */
 const IngredientCards = () => {
   const ingredients = [
     {
@@ -116,10 +133,21 @@ const IngredientCards = () => {
               className="w-full h-48 object-cover transform transition duration-300 ease-in-out group-hover:scale-105"
             />
             <div
-              className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-80 transition-opacity duration-300 ease-in-out"
+              className="
+                absolute inset-0
+                bg-gradient-to-t from-black to-transparent
+                opacity-0 group-hover:opacity-80
+                transition-opacity duration-300 ease-in-out
+              "
               aria-hidden="true"
             ></div>
-            <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+            <div
+              className="
+                absolute bottom-0 left-0 right-0 p-4
+                opacity-0 group-hover:opacity-100
+                transition-opacity duration-300 ease-in-out
+              "
+            >
               <h3 className="text-xl font-bold text-white">
                 {ingredient.name}
               </h3>
@@ -134,6 +162,9 @@ const IngredientCards = () => {
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                          RecipeTimeline Component                          */
+/* -------------------------------------------------------------------------- */
 export const RecipeTimeline = () => {
   const recipeSteps = [
     {
@@ -261,32 +292,42 @@ export const RecipeTimeline = () => {
         aria-label="Recipe Timeline"
       >
         <div
-          className="absolute left-6 top-0 bottom-0 w-1 bg-green-200"
+          className="absolute left-6 top-0 bottom-0 w-1 bg-[var(--color-tertiary-20)]"
           aria-hidden="true"
         ></div>
         <div className="space-y-12">
           {recipeSteps.map((step, index) => (
             <div
               key={index}
-              className="flex items-start transition-transform duration-500 ease-out transform hover:scale-105"
+              className="
+                flex items-start
+                transition-transform duration-500 ease-out
+                transform hover:scale-105
+              "
               aria-label={`Recipe step: ${step.title}`}
             >
               <div className="flex flex-col items-center mr-4 relative">
-                <div className="bg-green-500 rounded-full h-12 w-12 flex items-center justify-center z-10">
+                <div
+                  className="
+                    bg-[var(--color-tertiary)]
+                    rounded-full h-12 w-12
+                    flex items-center justify-center z-10
+                  "
+                >
                   {step.icon}
                 </div>
                 {index !== recipeSteps.length - 1 && (
                   <div
-                    className="flex-1 w-px bg-green-200 mt-1"
+                    className="flex-1 w-px bg-[var(--color-tertiary-20)] mt-1"
                     aria-hidden="true"
                   ></div>
                 )}
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md w-full">
-                <h3 className="text-xl font-bold font-sans text-green-600">
+                <h3 className="text-xl font-bold font-sans text-[var(--color-tertiary)]">
                   {step.title}
                 </h3>
-                <p className="mt-2 text-gray-700 font-serif">
+                <p className="mt-2 text-[var(--color-secondary-70)] font-serif">
                   {step.description}
                 </p>
               </div>
@@ -298,10 +339,13 @@ export const RecipeTimeline = () => {
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                       PrintRecipeCard (Download) Btn                       */
+/* -------------------------------------------------------------------------- */
 const PrintRecipeCard = () => {
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = recipe; // recipe is the URL string from your import
+    link.href = recipe; // PDF import
     link.download = "NutchaBitesRecipe.pdf"; // The desired file name
     document.body.appendChild(link);
     link.click();
@@ -311,7 +355,14 @@ const PrintRecipeCard = () => {
   return (
     <button
       onClick={handleDownload}
-      className="bg-gradient-to-r from-rose-500 to-amber-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out"
+      className="
+        bg-gradient-to-r
+        from-[var(--color-accent)]
+        to-[var(--color-accent-80)]
+        text-white font-bold py-3 px-6 rounded-lg shadow-md
+        hover:shadow-xl transform hover:scale-105
+        transition duration-300 ease-in-out
+      "
       aria-label="Download Recipe Card"
     >
       Print Recipe Card
@@ -319,6 +370,9 @@ const PrintRecipeCard = () => {
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                          CTAButtons Component                              */
+/* -------------------------------------------------------------------------- */
 const CTAButtons = () => {
   return (
     <FadeInSection className="mt-16">
@@ -327,7 +381,12 @@ const CTAButtons = () => {
         aria-label="Call to Action Buttons"
       >
         <button
-          className="bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out"
+          className="
+            bg-[var(--color-tertiary)]
+            text-white font-bold py-3 px-6 rounded-lg shadow-md
+            hover:shadow-xl transform hover:scale-105
+            transition duration-300 ease-in-out
+          "
           aria-label="Buy Nutcha Bites"
         >
           Buy Nutcha Bites
@@ -338,13 +397,20 @@ const CTAButtons = () => {
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                         Main NutchaBitesRecipe Page                        */
+/* -------------------------------------------------------------------------- */
 const NutchaBitesRecipe = () => {
   const [showNutrition, setShowNutrition] = useState(false);
   const timelineRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
-      className="max-w-7xl mx-auto p-4 bg-neutral-50"
+      className="
+        max-w-7xl mx-auto p-4
+        bg-[var(--color-primary)]
+        text-[var(--color-secondary-80)]
+      "
       aria-label="Nutcha Bites Recipe Page"
     >
       <HeroSection />
@@ -358,32 +424,44 @@ const NutchaBitesRecipe = () => {
       {/* Fusion Story Section */}
       <FadeInSection className="relative mt-16">
         <div
-          className="absolute inset-0 bg-[url('https://via.placeholder.com/800x600?text=Texture')] bg-cover bg-center opacity-20 pointer-events-none"
+          className="
+            absolute inset-0
+            bg-[url('https://via.placeholder.com/800x600?text=Texture')]
+            bg-cover bg-center
+            opacity-20 pointer-events-none
+          "
           aria-hidden="true"
         ></div>
         <section
-          className="relative bg-white p-6 rounded-lg shadow-inner flex flex-col md:flex-row"
+          className="
+            relative bg-white p-6 rounded-lg shadow-inner
+            flex flex-col md:flex-row
+          "
           aria-label="Fusion Story"
         >
           <div className="md:w-2/3">
-            <h2 className="text-2xl font-bold mb-4 text-green-600 font-sans">
+            <h2 className="text-2xl font-bold mb-4 text-[var(--color-tertiary)] font-sans">
               The Fusion Story
             </h2>
-            <p className="text-gray-700 font-serif">
+            <p className="text-[var(--color-secondary-70)] font-serif">
               Nutcha Bites is born from a deep passion for merging the
               time-honored traditions of Iloilo bandi with the modern vibrancy
               of matcha. Our process carefully balances heritage and
               innovation—each step is crafted to create a unique culinary
               experience.
             </p>
-            <p className="mt-4 text-gray-700 font-serif">
+            <p className="mt-4 text-[var(--color-secondary-70)] font-serif">
               Every bite tells a story of local craftsmanship, careful sourcing,
               and meticulous preparation.
             </p>
           </div>
           <div className="md:w-1/3 mt-6 md:mt-0 flex items-center justify-center">
             <blockquote
-              className="italic text-gray-600 border-l-4 border-amber-500 pl-4 font-serif"
+              className="
+                italic text-[var(--color-secondary-60)]
+                border-l-4 border-[var(--color-accent)]
+                pl-4 font-serif
+              "
               aria-label="Fusion Story Quote"
             >
               "A harmonious blend of history and modernity in every bite."
@@ -407,7 +485,12 @@ const NutchaBitesRecipe = () => {
         <div className="flex justify-center">
           <button
             onClick={() => setShowNutrition((prev) => !prev)}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300"
+            className="
+              bg-[var(--color-tertiary)]
+              hover:bg-[var(--color-tertiary-80)]
+              text-white font-bold py-2 px-4 rounded
+              transition duration-300
+            "
             aria-label="Toggle Nutritional Information"
           >
             {showNutrition ? "Hide Nutritional Info" : "Show Nutritional Info"}
@@ -421,10 +504,10 @@ const NutchaBitesRecipe = () => {
             className="p-4 bg-white rounded-lg shadow"
             aria-label="Nutritional Information"
           >
-            <h3 className="text-xl font-bold mb-4 text-green-600 font-sans">
+            <h3 className="text-xl font-bold mb-4 text-[var(--color-tertiary)] font-sans">
               Nutritional Information
             </h3>
-            <ul className="list-disc list-inside text-gray-700 font-serif">
+            <ul className="list-disc list-inside text-[var(--color-secondary-70)] font-serif">
               <li>Calories: X kcal</li>
               <li>Fat: X g</li>
               <li>Carbohydrates: X g</li>

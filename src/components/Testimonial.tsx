@@ -1,5 +1,8 @@
 import React from "react";
 
+/* -------------------------------------------------------------------------- */
+/*                        Testimonial Data & Helpers                          */
+/* -------------------------------------------------------------------------- */
 const testimonials = [
   {
     id: 1,
@@ -28,7 +31,6 @@ const testimonials = [
     quote:
       "Nutcha Bites is a masterpiece. The matcha infusion perfectly complements the traditional bandi taste.",
   },
-  // Add more testimonials as needed
 ];
 
 interface StarRatingProps {
@@ -44,11 +46,14 @@ const StarRating: React.FC<StarRatingProps> = ({ rating }) => {
         return (
           <svg
             key={index}
-            className={`w-6 h-6 cursor-pointer transform transition duration-200 ease-in-out ${
-              isFilled
-                ? "text-emerald-500 hover:scale-110 hover:text-emerald-600"
-                : "text-neutral-300 hover:scale-110 hover:text-neutral-400"
-            }`}
+            className={`
+              w-6 h-6 cursor-pointer transform transition duration-200 ease-in-out
+              ${
+                isFilled
+                  ? "text-[var(--color-tertiary)] hover:scale-110 hover:text-[var(--color-tertiary-80)]"
+                  : "text-[var(--color-secondary-30)] hover:scale-110 hover:text-[var(--color-secondary-40)]"
+              }
+            `}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -60,7 +65,9 @@ const StarRating: React.FC<StarRatingProps> = ({ rating }) => {
   );
 };
 
-// Define an interface for the testimonial data
+/* -------------------------------------------------------------------------- */
+/*                          Testimonial Card Props                            */
+/* -------------------------------------------------------------------------- */
 interface Testimonial {
   id: number;
   name: string;
@@ -70,43 +77,71 @@ interface Testimonial {
   quote: string;
 }
 
-// Define the props for the component
 interface TestimonialCardProps {
   testimonial: Testimonial;
 }
 
 const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
   return (
-    <div className="group relative bg-gradient-to-br from-neutral-50 to-emerald-50 rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-shadow duration-300 ease-in-out font-sans">
+    <div
+      className="
+        group relative
+        bg-gradient-to-br
+        from-[var(--color-primary)]
+        to-[var(--color-tertiary-10)]
+        rounded-2xl shadow-lg p-4 sm:p-6 md:p-8
+        hover:shadow-2xl transition-shadow duration-300 ease-in-out
+        font-sans
+      "
+    >
       {/* Customer Details */}
       <div className="flex items-center mb-4 sm:mb-6">
         <img
           src={testimonial.photo}
           alt={testimonial.name}
-          className="w-16 sm:w-20 h-16 sm:h-20 rounded-full border-4 border-emerald-500 object-cover"
+          className="
+            w-16 sm:w-20 h-16 sm:h-20
+            rounded-full border-4
+            border-[var(--color-tertiary)]
+            object-cover
+          "
         />
         <div className="ml-4 sm:ml-6">
           <h4
-            className="text-lg sm:text-xl font-extrabold text-emerald-700 tracking-wide"
+            className="
+              text-lg sm:text-xl font-extrabold
+              text-[var(--color-tertiary)]
+              tracking-wide
+            "
             style={{ textShadow: "1px 1px 2px rgba(0, 0, 0, 0.1)" }}
           >
             {testimonial.name}
           </h4>
-          <p className="text-xs sm:text-sm text-neutral-600 tracking-wide">
+          <p className="text-xs sm:text-sm text-[var(--color-secondary-60)] tracking-wide">
             {testimonial.location}
           </p>
         </div>
       </div>
+
       {/* Star Rating */}
       <StarRating rating={testimonial.rating} />
+
       {/* Testimonial Text */}
-      <p className="mt-4 text-neutral-700 leading-relaxed tracking-normal text-sm sm:text-base">
+      <p className="mt-4 text-[var(--color-secondary-80)] leading-relaxed tracking-normal text-sm sm:text-base">
         {testimonial.quote}
       </p>
+
       {/* Enhanced Matcha Leaf Icon */}
-      <div className="absolute bottom-4 right-4 opacity-5 group-hover:opacity-10 transition-all duration-500 ease-in-out transform group-hover:scale-105">
+      <div
+        className="
+          absolute bottom-4 right-4
+          opacity-5 group-hover:opacity-10
+          transition-all duration-500 ease-in-out
+          transform group-hover:scale-105
+        "
+      >
         <svg
-          className="w-8 sm:w-10 h-8 sm:h-10 text-emerald-500"
+          className="w-8 sm:w-10 h-8 sm:h-10 text-[var(--color-tertiary)]"
           viewBox="0 0 24 24"
           fill="currentColor"
         >
@@ -117,37 +152,54 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                            CTA Button Component                            */
+/* -------------------------------------------------------------------------- */
 const CTAButton = () => {
   return (
     <a
       href="/share-review"
-      className="inline-block bg-gradient-to-r from-emerald-500 to-rose-500 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-2xl transform hover:scale-105 transition duration-300 ease-in-out"
+      className="
+        inline-block
+        bg-gradient-to-r
+        from-[var(--color-tertiary)]
+        to-[var(--color-accent)]
+        text-white px-6 py-3
+        rounded-full shadow-lg
+        hover:shadow-2xl transform hover:scale-105
+        transition duration-300 ease-in-out
+      "
     >
       Join Our Community of Nutcha Enthusiasts!
     </a>
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                        Main Testimonial Section                            */
+/* -------------------------------------------------------------------------- */
 const Testimonial = () => {
   return (
-    <section className="py-12 bg-neutral-50">
+    <section className="py-12 bg-[var(--color-primary)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-emerald-700">
+          <h2 className="text-3xl font-bold text-[var(--color-tertiary)]">
             What Our Nutcha Lovers Are Saying
           </h2>
-          <p className="mt-2 text-neutral-600">
+          <p className="mt-2 text-[var(--color-secondary-60)]">
             Real reviews from those who savor the unique fusion of Iloilo bandi
             and matcha in Nutcha Bites.
           </p>
         </div>
+
         {/* Responsive Grid for Testimonial Cards */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
             <TestimonialCard key={testimonial.id} testimonial={testimonial} />
           ))}
         </div>
+
         {/* Call-to-Action Button */}
         <div className="mt-12 text-center">
           <CTAButton />

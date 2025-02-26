@@ -49,9 +49,11 @@ const faqData: FAQData[] = [
   },
 ];
 
-// Updated helper function with proper type annotations
+/* -------------------------------------------------------------------------- */
+/*                           Helper Functions                                 */
+/* -------------------------------------------------------------------------- */
 function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return str.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
 }
 
 function highlightText(text: string, searchTerm: string): React.ReactNode {
@@ -60,7 +62,7 @@ function highlightText(text: string, searchTerm: string): React.ReactNode {
   const parts = text.split(regex);
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} className="bg-yellow-200 px-1 rounded">
+      <mark key={i} className="bg-[var(--color-accent-20)] px-1 rounded">
         {part}
       </mark>
     ) : (
@@ -69,6 +71,9 @@ function highlightText(text: string, searchTerm: string): React.ReactNode {
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/*                            FAQItem Component                               */
+/* -------------------------------------------------------------------------- */
 interface FAQItemProps {
   faq: FAQData;
   index: number;
@@ -85,7 +90,7 @@ const FAQItem: React.FC<FAQItemProps> = ({
   searchTerm,
 }) => {
   return (
-    <article className="bg-white rounded-xl shadow-lg overflow-hidden">
+    <article className="bg-[var(--color-primary)] rounded-xl shadow-lg overflow-hidden">
       <header>
         <h3>
           <button
@@ -93,13 +98,23 @@ const FAQItem: React.FC<FAQItemProps> = ({
             onClick={() => onToggle(index)}
             aria-expanded={isActive}
             aria-controls={`faq-panel-${index}`}
-            className="w-full flex justify-between items-center p-6 text-left text-lg font-medium text-gray-700 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-rose-500 transition-colors"
+            className="
+              w-full flex justify-between items-center p-6 text-left
+              text-lg font-medium
+              text-[var(--color-secondary-80)]
+              hover:bg-[var(--color-primary-90)]
+              focus:outline-none
+              focus:ring-2
+              focus:ring-[var(--color-accent)]
+              transition-colors duration-300
+            "
           >
             <span>{highlightText(faq.question, searchTerm)}</span>
             <svg
-              className={`w-6 h-6 transform transition-transform duration-300 ${
-                isActive ? "rotate-180" : ""
-              }`}
+              className={`
+                w-6 h-6 transform transition-transform duration-300
+                ${isActive ? "rotate-180" : ""}
+              `}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -125,9 +140,9 @@ const FAQItem: React.FC<FAQItemProps> = ({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.4 }}
-            className="overflow-hidden border-t border-neutral-200"
+            className="overflow-hidden border-t border-[var(--color-secondary-10)]"
           >
-            <div className="p-6 pt-4 text-gray-600">
+            <div className="p-6 pt-4 text-[var(--color-secondary-70)]">
               <p>{highlightText(faq.answer, searchTerm)}</p>
             </div>
           </motion.div>
@@ -137,6 +152,9 @@ const FAQItem: React.FC<FAQItemProps> = ({
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                           Main FAQ Component                               */
+/* -------------------------------------------------------------------------- */
 const FAQ: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -153,13 +171,24 @@ const FAQ: React.FC = () => {
   );
 
   return (
-    <section className="max-w-3xl mx-auto p-6" aria-labelledby="faq-title">
+    <section
+      className="
+        max-w-3xl mx-auto p-6
+        bg-[var(--color-primary-80)]
+        text-[var(--color-secondary-80)]
+      "
+      aria-labelledby="faq-title"
+    >
       <h2
         id="faq-title"
-        className="text-4xl font-extrabold text-center mb-8 text-emerald-500"
+        className="
+          text-4xl font-extrabold text-center mb-8
+          text-[var(--color-tertiary)]
+        "
       >
         Frequently Asked Questions
       </h2>
+
       <div className="mb-8">
         <label htmlFor="faq-search" className="sr-only">
           Search FAQs
@@ -171,9 +200,16 @@ const FAQ: React.FC = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           aria-label="Search FAQs"
-          className="w-full p-3 border border-neutral-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+          className="
+            w-full p-3
+            border border-[var(--color-secondary-20)]
+            rounded-xl shadow-sm
+            focus:outline-none focus:ring-2
+            focus:ring-[var(--color-accent)]
+          "
         />
       </div>
+
       <div className="space-y-6">
         {filteredFaqData.length > 0 ? (
           filteredFaqData.map((faq, index) => (
@@ -187,7 +223,9 @@ const FAQ: React.FC = () => {
             />
           ))
         ) : (
-          <p className="text-center text-gray-500">No FAQs found.</p>
+          <p className="text-center text-[var(--color-secondary-60)]">
+            No FAQs found.
+          </p>
         )}
       </div>
     </section>

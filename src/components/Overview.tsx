@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import overviewImage from "../assets/OverviewImage.webp";
+import { HashLink } from "react-router-hash-link";
 
+/* -------------------------------------------------------------------------- */
+/*                           Custom Check Icon                                */
+/* -------------------------------------------------------------------------- */
 interface CheckIconProps {
   className?: string;
 }
@@ -23,6 +27,9 @@ const CheckIcon: React.FC<CheckIconProps> = ({ className = "" }) => (
   </svg>
 );
 
+/* -------------------------------------------------------------------------- */
+/*                          Feature Card Component                            */
+/* -------------------------------------------------------------------------- */
 interface FeatureCardProps {
   title: string;
   description: string;
@@ -31,17 +38,33 @@ interface FeatureCardProps {
 const FeatureCard: React.FC<FeatureCardProps> = ({ title, description }) => {
   return (
     <li role="listitem" className="flex items-start">
-      <div className="flex-shrink-0 bg-emerald-100 text-emerald-500 rounded-full p-2 mr-3">
+      {/* Circle with Check Icon */}
+      <div
+        className="
+          flex-shrink-0
+          bg-[var(--color-tertiary-10)]
+          text-[var(--color-tertiary)]
+          rounded-full p-2 mr-3
+        "
+      >
         <CheckIcon />
       </div>
+      {/* Text Content */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-800">{title}</h3>
-        <p className="text-sm text-neutral-600">{description}</p>
+        <h3 className="text-lg font-semibold text-[var(--color-secondary)]">
+          {title}
+        </h3>
+        <p className="text-sm text-[var(--color-secondary-60)]">
+          {description}
+        </p>
       </div>
     </li>
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*                          Main Overview Component                           */
+/* -------------------------------------------------------------------------- */
 const Overview: React.FC = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -53,38 +76,62 @@ const Overview: React.FC = () => {
 
   return (
     <section
-      className="bg-neutral-50 text-neutral-800 py-12 sm:py-16 lg:py-20 font-sans"
+      className="
+        bg-[var(--color-primary)]
+        text-[var(--color-secondary-80)]
+        py-12 sm:py-16 lg:py-20
+        font-sans
+      "
       aria-labelledby="overview-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center justify-between">
-          {/* Right Column: High-Quality Product Image with Fade-In Animation */}
-          <div className="w-full lg:w-1/2 ">
+          {/* Right Column: Product Image with Fade-In Animation */}
+          <div className="w-full lg:w-1/2">
             <img
-              src={overviewImage} // Replace with your actual product image URL
+              src={overviewImage}
               alt="High-quality Nutcha Bites showcasing the artisanal fusion of vibrant matcha and traditional Iloilo bandi, presented with matcha powder accents and rustic cultural details."
               onLoad={() => setImageLoaded(true)}
-              className={`w-full h-auto rounded-lg shadow-lg transition-opacity duration-1000 ${
-                imageLoaded ? "opacity-100" : "opacity-0"
-              }`}
+              className={`
+                w-full h-auto rounded-lg shadow-lg transition-opacity duration-1000
+                ${imageLoaded ? "opacity-100" : "opacity-0"}
+              `}
             />
           </div>
+
           {/* Left Column: Text Content */}
           <div className="w-full lg:w-1/2 mt-10 lg:mt-0 lg:ml-10">
             <header className="mb-8">
               <h1
                 id="overview-heading"
-                className="text-3xl sm:text-4xl font-bold text-emerald-500 mb-4 tracking-tight"
+                className="
+                  text-3xl sm:text-4xl font-bold
+                  text-[var(--color-tertiary)]
+                  mb-4 tracking-tight
+                "
               >
                 Experience the Fusion: Matcha Magic Meets Iloilo Tradition
               </h1>
-              <p className="text-lg sm:text-xl text-neutral-600 mb-6 leading-relaxed">
+              <p
+                className="
+                  text-lg sm:text-xl
+                  text-[var(--color-secondary-60)]
+                  mb-6 leading-relaxed
+                "
+              >
                 Nutcha Bites blends the vibrant, earthy taste of premium matcha
                 with the beloved, time-honored flavor of Iloilo’s bandi
                 delicacy.
               </p>
             </header>
-            <p className="mb-8 text-base sm:text-lg text-neutral-700 leading-relaxed">
+
+            <p
+              className="
+                mb-8 text-base sm:text-lg
+                text-[var(--color-secondary-70)]
+                leading-relaxed
+              "
+            >
               Nutcha Bites is more than just a snack—it’s a journey that marries
               the bold traditions of Iloilo with the modern allure of Japanese
               matcha. Each bite tells a story of artisanal craftsmanship,
@@ -115,17 +162,25 @@ const Overview: React.FC = () => {
               />
             </ul>
 
-            {/* Call-to-Action as a semantic button */}
-            <button
-              type="button"
+            {/* Call-to-Action Button */}
+            <HashLink
+              smooth
+              to={"/#vision"}
               aria-label="Discover the story behind Nutcha Bites"
-              onClick={handleCTAClick}
-              className="bg-rose-500 text-white px-6 py-3 rounded-md text-lg font-medium 
-                         hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-600 focus:ring-opacity-50 
-                         transition duration-300"
+              className="
+                bg-[var(--color-accent)]
+                text-white px-6 py-3
+                rounded-md text-lg font-medium
+                hover:bg-[var(--color-accent-80)]
+                focus:outline-none
+                focus:ring-2
+                focus:ring-[var(--color-accent-60)]
+                focus:ring-opacity-50
+                transition duration-300
+              "
             >
               Discover Our Story
-            </button>
+            </HashLink>
           </div>
         </div>
       </div>

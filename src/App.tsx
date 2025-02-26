@@ -10,7 +10,6 @@ import Vision from "./components/Vision";
 import Testimonial from "./components/Testimonial";
 import FAQ from "./components/FAQ";
 import ContactNewsletter from "./components/ContactNewsletter";
-import Order from "./components/Order";
 
 const App = () => {
   return (
@@ -53,9 +52,9 @@ const App = () => {
                   <section id="contactnewsletter">
                     <ContactNewsletter />
                   </section>
-                  <section id="order">
+                  {/* <section id="order">
                     <Order />
-                  </section>
+                  </section> */}
                 </main>
               </>
             }

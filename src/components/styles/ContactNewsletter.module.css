@@ -1,15 +1,19 @@
-/* Define custom palette */
+/* Example of replaced color variables based on the new scheme:
+   --color-primary, --color-secondary, --color-tertiary, --color-accent */
+
 :root {
-  --color-emerald-500: oklch(0.696 0.17 162.48);
-  --color-red-500: oklch(0.637 0.237 25.331);
-  --color-neutral-50: #fafafa;
-  --color-white: #fff;
+  --color-primary: hsla(33, 50%, 90%);
+  --color-secondary: hsl(33, 50%, 10%);
+  --color-tertiary: hsl(93, 80%, 20%);
+  --color-accent: hsl(333, 80%, 20%);
+  --color-white: #ffffff; /* optional pure white reference */
 }
 
+/* Container: replaced background color with --color-primary */
 .container {
   min-height: 100vh;
   padding: 3rem 2rem;
-  background-color: var(--color-neutral-50);
+  background-color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,13 +38,15 @@
 .headline {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-emerald-500);
+  color: var(--color-tertiary); /* replaced emerald-500 */
   margin-bottom: 0.75rem;
 }
 
 .subheadline {
   font-size: 1rem;
-  color: #4a5568;
+  color: var(
+    --color-secondary-70
+  ); /* replaced #4a5568 with a secondary variant */
   margin-bottom: 2rem;
 }
 
@@ -59,17 +65,17 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #4a5568;
+  color: var(--color-secondary-70); /* replaced #4a5568 */
 }
 
 .tabButton:hover {
-  background-color: rgba(47, 133, 90, 0.05);
+  background-color: var(--color-tertiary-10); /* subtle highlight */
   transform: translateY(-2px);
 }
 
 .activeTab {
-  border-color: var(--color-emerald-500);
-  color: var(--color-emerald-500);
+  border-color: var(--color-tertiary);
+  color: var(--color-tertiary);
   font-weight: 600;
 }
 
@@ -92,7 +98,7 @@
 .label {
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
-  color: #4a5568;
+  color: var(--color-secondary-70); /* replaced #4a5568 */
 }
 
 .inputWrapper {
@@ -104,14 +110,14 @@
   top: 50%;
   left: 0.75rem;
   transform: translateY(-50%);
-  color: #a0aec0;
+  color: var(--color-secondary-40); /* replaced #a0aec0 */
 }
 
 .input,
 .textarea {
   width: 100%;
   padding: 0.75rem 0.75rem 0.75rem 2.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-secondary-20); /* replaced #e2e8f0 */
   border-radius: 6px;
   font-size: 1rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -119,8 +125,8 @@
 
 .input:focus,
 .textarea:focus {
-  border-color: var(--color-emerald-500);
-  box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.2);
+  border-color: var(--color-tertiary); /* replaced emerald-500 */
+  box-shadow: 0 0 0 3px rgba(70, 150, 90, 0.2); /* adjust to your brand style */
   outline: none;
 }
 
@@ -129,11 +135,12 @@
   padding: 0.75rem;
 }
 
+/* Submit Button: gradient from tertiary to accent */
 .submitButton {
   background: linear-gradient(
     135deg,
-    var(--color-emerald-500),
-    var(--color-red-500)
+    var(--color-tertiary),
+    var(--color-accent)
   );
   border: none;
   border-radius: 9999px;
@@ -156,13 +163,13 @@
 }
 
 .socialIcon {
-  color: #4a5568;
+  color: var(--color-secondary-60); /* replaced #4a5568 */
   transition: transform 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .socialIcon:hover {
   transform: scale(1.1) translateY(-2px);
-  color: var(--color-emerald-500);
+  color: var(--color-tertiary);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
