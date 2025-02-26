@@ -7,6 +7,10 @@ import Overview from "./components/Overview";
 import ScrollToHash from "./components/ScrollToHash";
 import Recipe from "./components/Recipe";
 import Vision from "./components/Vision";
+import Testimonial from "./components/Testimonial";
+import FAQ from "./components/FAQ";
+import ContactNewsletter from "./components/ContactNewsletter";
+import Order from "./components/Order";
 
 const App = () => {
   return (
@@ -39,6 +43,18 @@ const App = () => {
                   </section>
                   <section id="vision">
                     <Vision />
+                  </section>
+                  <section id="testimonial">
+                    <Testimonial />
+                  </section>
+                  <section id="faq">
+                    <FAQ />
+                  </section>
+                  <section id="contactnewsletter">
+                    <ContactNewsletter />
+                  </section>
+                  <section id="order">
+                    <Order />
                   </section>
                 </main>
               </>

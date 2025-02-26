@@ -42,7 +42,12 @@ const NavBar: React.FC = () => {
             {/* Desktop Navigation */}
             <ul className="hidden md:flex md:items-center space-x-6 ml-6">
               <li>
-                <HashLink smooth to="/#home" className="Home">
+                <HashLink
+                  smooth
+                  to="/#home"
+                  className="font-body text-sm font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
+                  aria-label="Home"
+                >
                   Home
                 </HashLink>
               </li>
@@ -68,8 +73,49 @@ const NavBar: React.FC = () => {
                 </HashLink>
               </li>
               <li>
+                <HashLink
+                  smooth
+                  to="/#vision"
+                  className="font-body text-sm font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
+                  aria-label="Vision"
+                >
+                  Vision
+                </HashLink>
+              </li>
+              <li>
+                <HashLink
+                  smooth
+                  to="/#testimonial"
+                  className="font-body text-sm font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
+                  aria-label="Testimonial"
+                >
+                  Testimonial
+                </HashLink>
+              </li>
+              <li>
+                <HashLink
+                  smooth
+                  to="/#faq"
+                  className="font-body text-sm font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
+                  aria-label="Frequently Asked Question"
+                >
+                  FAQs
+                </HashLink>
+              </li>
+              <li>
+                <HashLink
+                  smooth
+                  to="/#contactnewsletter"
+                  className="font-body text-sm font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
+                  aria-label="Contact Us / Newsletter Signup"
+                >
+                  Connect with Us
+                </HashLink>
+              </li>
+
+              <li>
                 <a
-                  href="/deals"
+                  href="/f"
                   className="font-body text-sm font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
                   aria-label="Deals"
                 >
@@ -196,36 +242,6 @@ const NavBar: React.FC = () => {
             >
               Recipe
             </HashLink>
-          </li>
-          <li>
-            <a
-              href="/deals"
-              className="font-body block text-base font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
-              role="menuitem"
-              aria-label="Deals"
-            >
-              Deals
-            </a>
-          </li>
-          <li>
-            <a
-              href="/about"
-              className="font-body block text-base font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
-              role="menuitem"
-              aria-label="About"
-            >
-              About
-            </a>
-          </li>
-          <li>
-            <a
-              href="/contact"
-              className="font-body block text-base font-medium text-neutral-700 transition-colors duration-300 ease-in-out hover:text-emerald-700"
-              role="menuitem"
-              aria-label="Contact"
-            >
-              Contact
-            </a>
           </li>
         </ul>
       </div>
