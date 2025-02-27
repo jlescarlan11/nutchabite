@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import overviewImage from "../assets/OverviewImage.webp";
+// import overviewImage from "../assets/OverviewImage.webp";
 import { HashLink } from "react-router-hash-link";
 
 /* -------------------------------------------------------------------------- */
@@ -89,7 +89,7 @@ const Overview: React.FC = () => {
           {/* Right Column: Product Image with Fade-In Animation */}
           <div className="w-full lg:w-1/2">
             <img
-              src={overviewImage}
+              src="https://via.placeholder.com/400x300?text=Iloilo+Bandi"
               alt="High-quality Nutcha Bites showcasing the artisanal fusion of vibrant matcha and traditional Iloilo bandi, presented with matcha powder accents and rustic cultural details."
               onLoad={() => setImageLoaded(true)}
               className={`
