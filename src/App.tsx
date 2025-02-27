@@ -12,9 +12,22 @@ import FAQ from "./components/FAQ";
 import ContactNewsletter from "./components/ContactNewsletter";
 import OrderForm from "./components/OrderForm";
 import { FormProvider, useForm } from "react-hook-form";
+import { useState } from "react";
+import LoginModal from "./components/LoginModal";
+import Dashboard from "./components/Dashboard";
 
 const App = () => {
   const methods = useForm();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  const handleLoginSuccess = (name: string) => {
+    setIsLoggedIn(true);
+    setUserName(name);
+  };
+
   return (
     <Router>
       <FormProvider {...methods}>
@@ -32,7 +45,12 @@ const App = () => {
                     >
                       <div className="absolute inset-0 bg-gradient-to-b from-stone-50/30 to-[var(--color-secondary)]/40 backdrop-blur-sm" />
                       <div className="relative z-10 text-[var(--color-primary)]">
-                        <NavBar />
+                        <NavBar
+                          onLoginClick={() => setShowLoginModal(true)}
+                          onLoginSuccess={handleLoginSuccess}
+                          isLoggedIn={isLoggedIn}
+                          userName={userName}
+                        />
                         <Hero />
                       </div>
                     </div>
@@ -61,8 +79,21 @@ const App = () => {
               }
             />
             <Route path="/order" element={<OrderForm />} />
+            <Route
+              path="/dashboard"
+              element={<Dashboard userName={userName} />}
+            />
           </Routes>
         </div>
+
+        {/* Render the Login Modal if needed */}
+        {showLoginModal && (
+          <LoginModal
+            isOpen={showLoginModal}
+            onClose={() => setShowLoginModal(false)}
+            onLoginSuccess={handleLoginSuccess}
+          />
+        )}
       </FormProvider>
     </Router>
   );
