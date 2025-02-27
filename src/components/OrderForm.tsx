@@ -73,7 +73,7 @@ const ResumeBanner = styled.div`
   gap: 1rem;
 `;
 
-// Back to Home Button
+// Back to Home Button (persistent)
 const BackToHomeButton = styled.button`
   position: absolute;
   top: 1rem;
@@ -360,13 +360,24 @@ const DropdownItem = styled.li`
   }
 `;
 
+// Pricing Card to display prices for each size
+const PricingCard = styled.div`
+  border: 1px solid #ccc;
+  padding: 0.8rem;
+  border-radius: 4px;
+  background: #fafafa;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  width: 100%;
+`;
+
 // Animated section for step transitions
 const StepSection = styled.section`
   animation: ${fadeIn} 0.5s ease-in-out;
   outline: none;
 `;
 
-// Sticky container for the Confirm Order button (if needed)
+// Sticky container for the Confirm Order button
 const StickyButtonContainer = styled.div`
   position: sticky;
   bottom: 0;
@@ -807,6 +818,13 @@ const OrderForm: React.FC = () => {
     { label: "Large", value: "Large", icon: "🔴" },
   ];
 
+  // Pricing info for each size
+  const pricingInfo = [
+    { size: "Small", price: "$4.99" },
+    { size: "Medium", price: "$5.99" },
+    { size: "Large", price: "$6.99" },
+  ];
+
   return (
     <FormWrapper>
       <SkipLink href="#order-form">Skip to Order Form</SkipLink>
@@ -869,6 +887,23 @@ const OrderForm: React.FC = () => {
                         value={product.size}
                         onChange={handleSizeChange}
                       />
+                      {/* Pricing Table for each size */}
+                      <PricingCard>
+                        <strong>Prices:</strong>
+                        <ul
+                          style={{
+                            listStyle: "none",
+                            padding: 0,
+                            margin: "0.5rem 0 0",
+                          }}
+                        >
+                          {pricingInfo.map((item) => (
+                            <li key={item.size}>
+                              {item.size}: {item.price}
+                            </li>
+                          ))}
+                        </ul>
+                      </PricingCard>
                     </div>
                     <QuantitySelectorContainer>
                       <span style={{ fontWeight: "bold", marginRight: "1rem" }}>
@@ -957,7 +992,6 @@ const OrderForm: React.FC = () => {
                     aria-invalid={errors.email ? "true" : "false"}
                     error={!!errors.email}
                   />
-                  {/* Help Icon with contextual tooltip for email */}
                   <HelpIcon title="We will use this email to send you order updates.">
                     ?
                   </HelpIcon>
@@ -1175,7 +1209,17 @@ const OrderForm: React.FC = () => {
                 Save Receipt
               </Button>
             </div>
-            <div style={{ marginTop: "1rem" }}>
+            <div
+              style={{
+                marginTop: "1rem",
+                display: "flex",
+                justifyContent: "center",
+                gap: "1rem",
+              }}
+            >
+              <Button onClick={goBackHome} aria-label="Back to Home">
+                Back to Home
+              </Button>
               <Button
                 ref={modalCloseButtonRef}
                 onClick={resetForm}
