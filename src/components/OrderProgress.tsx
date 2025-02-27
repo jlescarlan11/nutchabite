@@ -21,8 +21,8 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps, currentStep }) => {
           className={`flex-1 mx-1 p-2 text-center rounded-full transition-colors duration-300 
             ${
               index <= currentStep
-                ? "bg-green-600 text-white"
-                : "bg-gray-300 text-gray-800"
+                ? "bg-green-500 text-white"
+                : "bg-gray-300 text-gray-700"
             }`}
           tabIndex={0}
           aria-label={`Step ${index + 1}: ${step}`}

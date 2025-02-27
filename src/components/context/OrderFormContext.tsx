@@ -1,10 +1,19 @@
-// context/OrderFormContext.tsx
-import React, { createContext, useReducer, useContext, ReactNode } from "react";
+import React from "react";
+
+// src/context/OrderFormContext.tsx
+export interface Order {
+  orderNumber: string;
+  date: string;
+  status: string;
+  items: string[];
+  // Additional fields as needed (e.g., buyer info)
+}
 
 export interface OrderDetails {
   variant: string;
   size: string;
   quantity: number;
+  customIngredients: string[];
 }
 
 export interface BuyerDetails {
@@ -23,6 +32,7 @@ export interface OrderState {
   buyerDetails: BuyerDetails;
   orderSubmitted: boolean;
   orderNumber: string;
+  orders: Order[]; // New array to store confirmed orders
 }
 
 const initialState: OrderState = {
@@ -31,6 +41,7 @@ const initialState: OrderState = {
     variant: "",
     size: "",
     quantity: 1,
+    customIngredients: [],
   },
   buyerDetails: {
     name: "",
@@ -43,6 +54,7 @@ const initialState: OrderState = {
   },
   orderSubmitted: false,
   orderNumber: "",
+  orders: [], // Initially empty
 };
 
 type OrderAction =
@@ -51,7 +63,8 @@ type OrderAction =
   | { type: "NEXT_STEP" }
   | { type: "PREV_STEP" }
   | { type: "SUBMIT_ORDER"; payload: string }
-  | { type: "RESET_FORM" };
+  | { type: "RESET_FORM" }
+  | { type: "REORDER"; payload: Order }; // Added REORDER action
 
 function orderReducer(state: OrderState, action: OrderAction): OrderState {
   switch (action.type) {
@@ -69,28 +82,52 @@ function orderReducer(state: OrderState, action: OrderAction): OrderState {
       return { ...state, step: state.step + 1 };
     case "PREV_STEP":
       return { ...state, step: state.step - 1 };
-    case "SUBMIT_ORDER":
-      return { ...state, orderSubmitted: true, orderNumber: action.payload };
+    case "SUBMIT_ORDER": {
+      const newOrder: Order = {
+        orderNumber: action.payload,
+        date: new Date().toISOString(),
+        status: "Pending", // or "Confirmed" depending on your logic
+        items: state.orderDetails.variant ? [state.orderDetails.variant] : [],
+      };
+      return {
+        ...state,
+        orderSubmitted: true,
+        orderNumber: action.payload,
+        orders: [...state.orders, newOrder], // Append the new order
+      };
+    }
     case "RESET_FORM":
       return initialState;
+    case "REORDER":
+      return {
+        ...state,
+        // Assuming you want to set orderDetails from the order payload:
+        orderDetails: {
+          variant: action.payload.items[0] || "",
+          size: "", // Adjust based on your order structure
+          quantity: 1,
+          customIngredients: [],
+        },
+        // Optionally reset buyerDetails, step, etc.
+        step: 1,
+        orderSubmitted: false,
+        orderNumber: "",
+      };
     default:
       return state;
   }
 }
 
-interface OrderFormProviderProps {
-  children: ReactNode;
-}
-
-const OrderFormContext = createContext<{
+const OrderFormContext = React.createContext<{
   state: OrderState;
   dispatch: React.Dispatch<OrderAction>;
 }>({ state: initialState, dispatch: () => null });
 
-export const OrderFormProvider: React.FC<OrderFormProviderProps> = ({
+export const OrderFormProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(orderReducer, initialState);
+  const [state, dispatch] = React.useReducer(orderReducer, initialState);
+  // Optionally persist state to localStorage here
   return (
     <OrderFormContext.Provider value={{ state, dispatch }}>
       {children}
@@ -98,4 +135,4 @@ export const OrderFormProvider: React.FC<OrderFormProviderProps> = ({
   );
 };
 
-export const useOrderFormContext = () => useContext(OrderFormContext);
+export const useOrderFormContext = () => React.useContext(OrderFormContext);

@@ -323,7 +323,7 @@ export const RecipeTimeline = () => {
                   ></div>
                 )}
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-md w-full">
+              <div className="bg-[var(--color-primary)] p-6 rounded-lg shadow-md w-full">
                 <h3 className="text-xl font-bold font-sans text-[var(--color-tertiary)]">
                   {step.title}
                 </h3>
@@ -434,7 +434,7 @@ const NutchaBitesRecipe = () => {
         ></div>
         <section
           className="
-            relative bg-white p-6 rounded-lg shadow-inner
+            relative bg-[var(--color-primary)] p-6 rounded-lg shadow-inner
             flex flex-col md:flex-row
           "
           aria-label="Fusion Story"
@@ -501,7 +501,7 @@ const NutchaBitesRecipe = () => {
       {showNutrition && (
         <FadeInSection className="mt-8">
           <section
-            className="p-4 bg-white rounded-lg shadow"
+            className="p-4 bg-[var(--color-primary)] rounded-lg shadow"
             aria-label="Nutritional Information"
           >
             <h3 className="text-xl font-bold mb-4 text-[var(--color-tertiary)] font-sans">

@@ -169,6 +169,7 @@ const CTAButton = () => {
         hover:shadow-2xl transform hover:scale-105
         transition duration-300 ease-in-out
       "
+      aria-label="Join Our Community of Nutcha Enthusiasts!"
     >
       Join Our Community of Nutcha Enthusiasts!
     </a>
