@@ -1,31 +1,37 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ReactNode } from "react";
 import styled, { keyframes } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
-/* --- Custom Animations --- */
-// Keyframe for a subtle matcha steam effect
+/* --- Animations --- */
 const steamAnimation = keyframes`
   0% { opacity: 0; transform: translateY(0); }
   50% { opacity: 0.8; transform: translateY(-10px); }
   100% { opacity: 0; transform: translateY(-20px); }
 `;
 
-// Fade in animation for step transitions
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateX(20px); }
   to { opacity: 1; transform: translateX(0); }
 `;
 
-// Shake animation for input validation errors
-const shake = keyframes`
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
+const popIn = keyframes`
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+`;
+
+const toastFade = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const tooltipAnimation = keyframes`
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 /* --- Styled Components --- */
-// Visually hidden element for screen reader only text
+// Screen reader only text
 const VisuallyHidden = styled.div`
   position: absolute;
   width: 1px;
@@ -38,7 +44,7 @@ const VisuallyHidden = styled.div`
   white-space: nowrap;
 `;
 
-// Skip link for enhanced keyboard navigation
+// Skip link for keyboard navigation
 const SkipLink = styled.a`
   position: absolute;
   top: -40px;
@@ -52,23 +58,57 @@ const SkipLink = styled.a`
   }
 `;
 
-// Wrapper to offset the fixed NavBar and set overall background
+// Resume banner for auto-saved order
+const ResumeBanner = styled.div`
+  background: #e0f7fa;
+  color: #00796b;
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid #b2dfdb;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+`;
+
+// Back to Home Button
+const BackToHomeButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #fff;
+  color: #8bc34a;
+  border: 1px solid #8bc34a;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+  z-index: 10;
+  &:hover {
+    background: #8bc34a;
+    color: #fff;
+  }
+`;
+
+// Main wrapper using a dynamic top padding variable (set based on NavBar height)
 const FormWrapper = styled.div`
-  padding-top: 80px;
-  background: #f5fff5;
+  padding-top: var(--navbar-height, 120px);
+  background: #f5f1e6;
   min-height: 100vh;
   font-family: "Helvetica Neue", Arial, sans-serif;
   position: relative;
 `;
 
-// Main container with subtle bandi-inspired background pattern
+// Card-based panel container with cultural background hint
 const FormContainer = styled.div`
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
   background: #fff;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   position: relative;
   background-image: url("bandi-pattern.png");
   background-size: cover;
@@ -76,7 +116,7 @@ const FormContainer = styled.div`
   animation: ${fadeIn} 0.5s ease-in-out;
 `;
 
-// Progress bar and step indicators
+// Progress indicators
 const ProgressBar = styled.div`
   display: flex;
   justify-content: space-between;
@@ -95,7 +135,7 @@ const StepIndicator = styled.div<{ active: boolean }>`
   transition: background 0.3s;
 `;
 
-// Dynamic progress bar for real-time feedback in Step 2
+// Dynamic progress bar for real-time feedback
 const DynamicProgressBarContainer = styled.div`
   background: #eee;
   border-radius: 4px;
@@ -112,7 +152,7 @@ const DynamicProgressBar = styled.div<{ progress: number }>`
   transition: width 0.3s ease;
 `;
 
-// Button component with dynamic feedback
+// Button with dynamic feedback
 interface ButtonProps {
   primary?: boolean;
 }
@@ -137,40 +177,54 @@ const Button = styled.button<ButtonProps>`
   }
 `;
 
-// Input component with interactive validation feedback
+// Floating label input container
+const FloatingInputContainer = styled.div`
+  position: relative;
+  margin-bottom: 1.5rem;
+`;
+
+const FloatingLabel = styled.label<{ active: boolean }>`
+  position: absolute;
+  left: 12px;
+  top: ${(props) => (props.active ? "0px" : "50%")};
+  transform: translateY(-50%);
+  font-size: ${(props) => (props.active ? "0.75rem" : "1rem")};
+  color: ${(props) => (props.active ? "#8bc34a" : "#999")};
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: #fff;
+  padding: 0 4px;
+`;
+
 interface InputProps {
   error?: boolean;
 }
-const Input = styled.input<InputProps>`
+
+const InputField = styled.input<InputProps>`
   width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 0.5rem;
+  padding: 1.2rem 0.8rem 0.8rem;
   border: 1px solid ${(props) => (props.error ? "red" : "#ccc")};
   border-radius: 4px;
   font-size: 1rem;
-  animation: ${(props) => (props.error ? shake : "none")} 0.3s;
+  transition: border-color 0.2s ease;
+  &:focus {
+    border-color: #8bc34a;
+  }
 `;
 
-// TextArea with interactive validation feedback
-interface TextAreaProps {
-  error?: boolean;
-}
-const TextArea = styled.textarea<TextAreaProps>`
+const TextAreaField = styled.textarea<InputProps>`
   width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 0.5rem;
+  padding: 1.2rem 0.8rem 0.8rem;
   border: 1px solid ${(props) => (props.error ? "red" : "#ccc")};
   border-radius: 4px;
   font-size: 1rem;
-  animation: ${(props) => (props.error ? shake : "none")} 0.3s;
+  transition: border-color 0.2s ease;
+  &:focus {
+    border-color: #8bc34a;
+  }
 `;
 
-// Container for inputs to display context-sensitive tooltips
-const InputContainer = styled.div`
-  position: relative;
-  margin-bottom: 1rem;
-`;
-
+// Tooltip for input guidance with subtle animation
 const Tooltip = styled.div`
   position: absolute;
   background: #333;
@@ -179,18 +233,166 @@ const Tooltip = styled.div`
   border-radius: 4px;
   font-size: 0.875rem;
   opacity: 0;
-  transition: opacity 0.2s;
+  animation: ${tooltipAnimation} 0.3s forwards;
   pointer-events: none;
   z-index: 10;
   top: -35px;
   left: 0;
-  ${InputContainer}:hover &,
-  ${InputContainer}:focus-within & {
-    opacity: 1;
+`;
+
+// Help Icon for contextual tooltips
+const HelpIcon = styled.span`
+  display: inline-block;
+  background: #8bc34a;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  font-size: 0.8rem;
+  margin-left: 4px;
+  cursor: pointer;
+  position: relative;
+`;
+
+// Split layout for Product Details with image and configurator
+const SplitLayout = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  @media (max-width: 768px) {
+    flex-direction: column;
   }
 `;
 
-// Decorative steam element for visual enhancement
+const ProductImage = styled.img`
+  flex: 1 1 300px;
+  max-width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+// Configurator container
+const Configurator = styled.div`
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+// Custom Quantity Selector
+const QuantitySelectorContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+`;
+
+const QuantityButton = styled.button`
+  background: #8bc34a;
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover {
+    background: #7cb342;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const QuantityDisplay = styled.div`
+  width: 50px;
+  text-align: center;
+  font-size: 1.2rem;
+`;
+
+// Custom Dropdown Components
+const DropdownContainer = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+`;
+
+const DropdownHeader = styled.div`
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const DropdownList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  position: absolute;
+  width: 100%;
+  background: #fff;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 20;
+`;
+
+const DropdownItem = styled.li`
+  padding: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  &:hover {
+    background: #f0f0f0;
+  }
+`;
+
+// Animated section for step transitions
+const StepSection = styled.section`
+  animation: ${fadeIn} 0.5s ease-in-out;
+  outline: none;
+`;
+
+// Sticky container for the Confirm Order button (if needed)
+const StickyButtonContainer = styled.div`
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 1rem 0;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  z-index: 5;
+`;
+
+// Toast notification for offline save confirmation
+const ToastNotification = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #323232;
+  color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  animation: ${toastFade} 0.5s ease-out;
+  z-index: 100;
+`;
+
+// Decorative steam element (optional)
 const Steam = styled.div`
   position: absolute;
   top: 10px;
@@ -202,32 +404,164 @@ const Steam = styled.div`
   animation: ${steamAnimation} 2s infinite;
 `;
 
-// Animated section wrapper for step transitions with accessible region role
-const StepSection = styled.section`
-  animation: ${fadeIn} 0.5s ease-in-out;
-  outline: none;
+// Timeline for Order Tracking in Confirmation Modal
+const TimelineContainer = styled.div`
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
-const OrderForm = () => {
-  // State for managing wizard step and live updates
+const TimelineItem = styled.div<{ active?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  &:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: ${(props) => (props.active ? "#8bc34a" : "#ccc")};
+    z-index: -1;
+  }
+`;
+
+const TimelineCircle = styled.div<{ active?: boolean }>`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: ${(props) => (props.active ? "#8bc34a" : "#ccc")};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.8rem;
+`;
+
+// Modal components for order confirmation
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+`;
+
+const ModalContent = styled.div`
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  animation: ${popIn} 0.6s ease-out;
+`;
+
+/* --- Error Boundary --- */
+class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong. Please try again later.</h1>;
+    }
+    return this.props.children;
+  }
+}
+
+/* --- Custom Dropdown Component --- */
+interface DropdownOption {
+  label: string;
+  value: string;
+  icon?: ReactNode;
+}
+
+interface CustomDropdownProps {
+  options: DropdownOption[];
+  value: string;
+  onChange: (value: string) => void;
+}
+
+const CustomDropdown: React.FC<CustomDropdownProps> = ({
+  options,
+  value,
+  onChange,
+}) => {
+  const [open, setOpen] = useState(false);
+  const toggleDropdown = () => setOpen((prev) => !prev);
+  const handleSelect = (val: string) => {
+    onChange(val);
+    setOpen(false);
+  };
+  const selectedOption = options.find((opt) => opt.value === value);
+  return (
+    <DropdownContainer>
+      <DropdownHeader onClick={toggleDropdown} aria-label="Select product size">
+        <span>
+          {selectedOption?.icon} {selectedOption?.label}
+        </span>
+        <span>{open ? "▲" : "▼"}</span>
+      </DropdownHeader>
+      {open && (
+        <DropdownList>
+          {options.map((opt) => (
+            <DropdownItem
+              key={opt.value}
+              onClick={() => handleSelect(opt.value)}
+              aria-label={`Select ${opt.label}`}
+            >
+              {opt.icon} {opt.label}
+            </DropdownItem>
+          ))}
+        </DropdownList>
+      )}
+    </DropdownContainer>
+  );
+};
+
+/* --- Component Types --- */
+interface Customer {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+}
+
+interface CustomerErrors {
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
+/* --- Main OrderForm Component --- */
+const OrderForm: React.FC = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [liveMessage, setLiveMessage] = useState("");
+  const [toast, setToast] = useState("");
+  const [orderConfirmed, setOrderConfirmed] = useState(false);
+  const [orderRef, setOrderRef] = useState("");
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
 
-  interface Customer {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-  }
-
-  interface CustomerErrors {
-    name?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-  }
-
-  // State for product details (Step 1)
+  // Product state for Step 1
   const [product, setProduct] = useState({
     size: "Medium",
     quantity: 1,
@@ -235,7 +569,7 @@ const OrderForm = () => {
     image: "matcha-bites.jpg",
   });
 
-  // State for customer details (Step 2) with inline validation errors
+  // Customer state for Step 2
   const [customer, setCustomer] = useState<Customer>({
     name: "",
     email: "",
@@ -244,39 +578,75 @@ const OrderForm = () => {
   });
   const [errors, setErrors] = useState<CustomerErrors>({});
 
-  // State for order confirmation (Step 3)
-  const [orderConfirmed, setOrderConfirmed] = useState(false);
-  const [orderRef, setOrderRef] = useState("");
-
   // Refs for focus management
   const nameInputRef = useRef<HTMLInputElement>(null);
   const stepSectionRef = useRef<HTMLElement>(null);
+  const modalCloseButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Compute progress for Step 2 (Customer Information)
-  const totalFields = 4;
-  const filledFields = Object.values(customer).filter(
-    (val) => val.trim() !== ""
-  ).length;
-  const progressPercentage = Math.round((filledFields / totalFields) * 100);
+  /* --- Analytics Tracker --- */
+  const trackEvent = (eventName: string, eventData: any) => {
+    console.log("Analytics event:", eventName, eventData);
+    // In production, send eventData to your analytics endpoint.
+  };
 
+  /* --- Auto-save & Resume functionality --- */
+  useEffect(() => {
+    const savedOrder = localStorage.getItem("orderFormData");
+    if (savedOrder) {
+      setShowResumePrompt(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const data = { product, customer, currentStep };
+    localStorage.setItem("orderFormData", JSON.stringify(data));
+    trackEvent("order_autosave", data);
+  }, [product, customer, currentStep]);
+
+  const resumeOrder = () => {
+    const savedOrder = localStorage.getItem("orderFormData");
+    if (savedOrder) {
+      const data = JSON.parse(savedOrder);
+      setProduct(data.product);
+      setCustomer(data.customer);
+      setCurrentStep(data.currentStep);
+      trackEvent("order_resume", data);
+      setShowResumePrompt(false);
+    }
+  };
+
+  const clearSavedOrder = () => {
+    localStorage.removeItem("orderFormData");
+    setShowResumePrompt(false);
+  };
+
+  /* --- Dynamic Top Padding based on NavBar --- */
+  useEffect(() => {
+    const navbar = document.getElementById("navbar");
+    if (navbar) {
+      const height = navbar.offsetHeight;
+      document.documentElement.style.setProperty(
+        "--navbar-height",
+        `${height + 20}px`
+      );
+    }
+  }, []);
+
+  /* --- Focus and Live Message Updates --- */
   useEffect(() => {
     let message = "";
     if (orderConfirmed) {
       message = "Order confirmed. Thank you for your order!";
     } else {
-      switch (currentStep) {
-        case 1:
-          message = "Step 1 of 3: Product Details";
-          break;
-        case 2:
-          message = "Step 2 of 3: Customer Information";
-          break;
-        case 3:
-          message = "Step 3 of 3: Order Summary";
-          break;
-        default:
-          break;
-      }
+      message = `Step ${currentStep} of 4: ${
+        currentStep === 1
+          ? "Product Details"
+          : currentStep === 2
+          ? "Customer Information"
+          : currentStep === 3
+          ? "Order Summary"
+          : ""
+      }`;
     }
     setLiveMessage(message);
     if (stepSectionRef.current) {
@@ -285,26 +655,38 @@ const OrderForm = () => {
     if (currentStep === 2 && nameInputRef.current) {
       nameInputRef.current.focus();
     }
+    trackEvent("step_change", { currentStep });
   }, [currentStep, orderConfirmed]);
 
   /* --- Event Handlers --- */
-  const handleProductChange = (
-    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
-  ) => {
-    const { name, value } = e.target;
-    let newPrice = product.price;
-    if (name === "size") {
-      const priceMap: Record<"Small" | "Medium" | "Large", number> = {
-        Small: 4.99,
-        Medium: 5.99,
-        Large: 6.99,
-      };
-      newPrice = priceMap[value as keyof typeof priceMap];
-    }
+  // Custom dropdown handler for size change. Also update image accordingly.
+  const handleSizeChange = (value: string) => {
+    const priceMap: Record<"Small" | "Medium" | "Large", number> = {
+      Small: 4.99,
+      Medium: 5.99,
+      Large: 6.99,
+    };
+    const imageMap: Record<"Small" | "Medium" | "Large", string> = {
+      Small: "matcha-bites-small.jpg",
+      Medium: "matcha-bites.jpg",
+      Large: "matcha-bites-large.jpg",
+    };
     setProduct((prev) => ({
       ...prev,
-      [name]: name === "quantity" ? parseInt(value, 10) : value,
-      price: newPrice,
+      size: value,
+      price: priceMap[value as keyof typeof priceMap],
+      image: imageMap[value as keyof typeof imageMap],
+    }));
+  };
+
+  const incrementQuantity = () => {
+    setProduct((prev) => ({ ...prev, quantity: prev.quantity + 1 }));
+  };
+
+  const decrementQuantity = () => {
+    setProduct((prev) => ({
+      ...prev,
+      quantity: prev.quantity > 1 ? prev.quantity - 1 : 1,
     }));
   };
 
@@ -345,7 +727,41 @@ const OrderForm = () => {
     setCurrentStep((prev) => prev - 1);
   };
 
-  /* --- IndexedDB Offline Data Persistence --- */
+  const confirmOrder = () => {
+    const reference = `NB-${Date.now()}`;
+    setOrderRef(reference);
+    const orderData = {
+      orderRef: reference,
+      userId: customer.email || "guest",
+      timestamp: new Date().toISOString(),
+      product,
+      customer,
+    };
+    saveOrderToIndexedDB(orderData);
+    setOrderConfirmed(true);
+    trackEvent("order_confirmed", orderData);
+  };
+
+  const resetForm = () => {
+    setProduct({
+      size: "Medium",
+      quantity: 1,
+      price: 5.99,
+      image: "matcha-bites.jpg",
+    });
+    setCustomer({ name: "", email: "", phone: "", address: "" });
+    setCurrentStep(1);
+    setOrderConfirmed(false);
+    setOrderRef("");
+    localStorage.removeItem("orderFormData");
+    trackEvent("order_reset", {});
+  };
+
+  const goBackHome = () => {
+    navigate("/");
+  };
+
+  /* --- Offline IndexedDB Functionality --- */
   const saveOrderToIndexedDB = async (order: any) => {
     try {
       const dbRequest = window.indexedDB.open("NutchaBitesDB", 1);
@@ -368,6 +784,8 @@ const OrderForm = () => {
         store.add(order);
         tx.oncomplete = function () {
           db.close();
+          setToast("Order saved offline");
+          setTimeout(() => setToast(""), 3000);
         };
       };
     } catch (error) {
@@ -375,24 +793,24 @@ const OrderForm = () => {
     }
   };
 
-  const confirmOrder = () => {
-    const reference = `NB-${Date.now()}`;
-    setOrderRef(reference);
-    const orderData = {
-      orderRef: reference,
-      userId: customer.email || "guest",
-      timestamp: new Date().toISOString(),
-      product,
-      customer,
-    };
-    saveOrderToIndexedDB(orderData);
-    setOrderConfirmed(true);
-  };
+  // Compute dynamic progress for customer info (Step 2)
+  const totalFields = 4;
+  const filledFields = Object.values(customer).filter(
+    (val) => val.trim() !== ""
+  ).length;
+  const progressPercentage = Math.round((filledFields / totalFields) * 100);
 
-  /* --- Render Component --- */
+  // Options for custom dropdown (with icons)
+  const sizeOptions: DropdownOption[] = [
+    { label: "Small", value: "Small", icon: "🟢" },
+    { label: "Medium", value: "Medium", icon: "🟡" },
+    { label: "Large", value: "Large", icon: "🔴" },
+  ];
+
   return (
     <FormWrapper>
       <SkipLink href="#order-form">Skip to Order Form</SkipLink>
+      <BackToHomeButton onClick={goBackHome}>Back to Home</BackToHomeButton>
       <VisuallyHidden aria-live="polite">{liveMessage}</VisuallyHidden>
       <FormContainer
         id="order-form"
@@ -401,14 +819,27 @@ const OrderForm = () => {
       >
         <h1
           id="order-form-title"
-          style={{ color: "#2e7d32", textAlign: "center" }}
+          style={{ color: "#5d4037", textAlign: "center" }}
         >
           Nutcha Bites Order Form
         </h1>
+        {/* Resume Order Banner */}
+        {showResumePrompt && (
+          <ResumeBanner>
+            <span>Resume your saved order?</span>
+            <Button primary onClick={resumeOrder}>
+              Resume
+            </Button>
+            <Button onClick={clearSavedOrder}>Clear</Button>
+          </ResumeBanner>
+        )}
         <ProgressBar aria-label="Order progress">
           <StepIndicator active={currentStep >= 1}>1</StepIndicator>
           <StepIndicator active={currentStep >= 2}>2</StepIndicator>
           <StepIndicator active={currentStep >= 3}>3</StepIndicator>
+          <StepIndicator active={orderConfirmed || currentStep >= 4}>
+            4
+          </StepIndicator>
         </ProgressBar>
 
         {!orderConfirmed ? (
@@ -420,54 +851,61 @@ const OrderForm = () => {
                 tabIndex={-1}
                 ref={stepSectionRef}
               >
-                <h2 id="product-details-heading" style={{ color: "#2e7d32" }}>
+                <h2 id="product-details-heading" style={{ color: "#5d4037" }}>
                   Product Details
                 </h2>
-                <img
-                  src={product.image}
-                  alt="Nutcha Bites – Matcha & Bandi"
-                  style={{
-                    width: "100%",
-                    borderRadius: "8px",
-                    marginBottom: "1rem",
-                  }}
-                />
-                <div>
-                  <label htmlFor="size">Size:</label>
-                  <select
-                    id="size"
-                    name="size"
-                    value={product.size}
-                    onChange={handleProductChange}
-                    aria-label="Select product size"
-                  >
-                    <option value="Small">Small</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Large">Large</option>
-                  </select>
-                </div>
-                <div style={{ marginTop: "1rem" }}>
-                  <label htmlFor="quantity">Quantity:</label>
-                  <input
-                    id="quantity"
-                    name="quantity"
-                    type="number"
-                    min="1"
-                    value={product.quantity}
-                    onChange={handleProductChange}
-                    aria-label="Select quantity"
+                <SplitLayout>
+                  <ProductImage
+                    src={product.image}
+                    alt="Nutcha Bites – Matcha & Bandi"
                   />
-                </div>
-                <p style={{ fontSize: "1.2rem", marginTop: "1rem" }}>
-                  Price: ${product.price * product.quantity}
-                </p>
-                <Button
-                  primary
-                  onClick={nextStep}
-                  aria-label="Proceed to customer information"
-                >
-                  Next
-                </Button>
+                  <Configurator>
+                    <div style={{ marginBottom: "1rem" }}>
+                      <label htmlFor="size" style={{ fontWeight: "bold" }}>
+                        Size:
+                      </label>
+                      <CustomDropdown
+                        options={sizeOptions}
+                        value={product.size}
+                        onChange={handleSizeChange}
+                      />
+                    </div>
+                    <QuantitySelectorContainer>
+                      <span style={{ fontWeight: "bold", marginRight: "1rem" }}>
+                        Quantity:
+                      </span>
+                      <QuantityButton
+                        onClick={decrementQuantity}
+                        aria-label="Decrease quantity"
+                      >
+                        –
+                      </QuantityButton>
+                      <QuantityDisplay>{product.quantity}</QuantityDisplay>
+                      <QuantityButton
+                        onClick={incrementQuantity}
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </QuantityButton>
+                    </QuantitySelectorContainer>
+                    <p
+                      style={{
+                        fontSize: "1.2rem",
+                        marginTop: "1rem",
+                        transition: "all 0.3s ease",
+                      }}
+                    >
+                      Price: ${(product.price * product.quantity).toFixed(2)}
+                    </p>
+                    <Button
+                      primary
+                      onClick={nextStep}
+                      aria-label="Proceed to customer information"
+                    >
+                      Next
+                    </Button>
+                  </Configurator>
+                </SplitLayout>
               </StepSection>
             )}
 
@@ -478,94 +916,95 @@ const OrderForm = () => {
                 tabIndex={-1}
                 ref={stepSectionRef}
               >
-                <h2 id="customer-info-heading" style={{ color: "#2e7d32" }}>
+                <h2 id="customer-info-heading" style={{ color: "#5d4037" }}>
                   Customer Information
                 </h2>
-                {/* Dynamic progress indicator for customer info */}
                 <DynamicProgressBarContainer
                   aria-label={`Form completion ${progressPercentage}%`}
                 >
                   <DynamicProgressBar progress={progressPercentage} />
                 </DynamicProgressBarContainer>
-                <InputContainer>
-                  <label htmlFor="name">Name:</label>
-                  <Input
+                <FloatingInputContainer>
+                  <FloatingLabel active={!!customer.name}>
+                    {customer.name ? "Name" : "Your full name"}
+                  </FloatingLabel>
+                  <InputField
                     id="name"
                     name="name"
                     type="text"
                     value={customer.name}
                     onChange={handleCustomerChange}
-                    placeholder="Your full name"
+                    placeholder=" "
                     aria-required="true"
                     aria-invalid={errors.name ? "true" : "false"}
                     ref={nameInputRef}
                     error={!!errors.name}
                   />
-                  <Tooltip role="tooltip">
-                    {errors.name ? errors.name : "Enter your full name"}
-                  </Tooltip>
-                </InputContainer>
-                <InputContainer>
-                  <label htmlFor="email">Email:</label>
-                  <Input
+                  {errors.name && <Tooltip role="alert">{errors.name}</Tooltip>}
+                </FloatingInputContainer>
+                <FloatingInputContainer>
+                  <FloatingLabel active={!!customer.email}>
+                    {customer.email ? "Email" : "example@domain.com"}
+                  </FloatingLabel>
+                  <InputField
                     id="email"
                     name="email"
                     type="email"
                     value={customer.email}
                     onChange={handleCustomerChange}
-                    placeholder="example@domain.com"
+                    placeholder=" "
                     aria-required="true"
                     aria-invalid={errors.email ? "true" : "false"}
                     error={!!errors.email}
                   />
-                  <Tooltip role="tooltip">
-                    {errors.email
-                      ? errors.email
-                      : "Enter a valid email address"}
-                  </Tooltip>
-                </InputContainer>
-                <InputContainer>
-                  <label htmlFor="phone">Phone:</label>
-                  <Input
+                  {/* Help Icon with contextual tooltip for email */}
+                  <HelpIcon title="We will use this email to send you order updates.">
+                    ?
+                  </HelpIcon>
+                  {errors.email && (
+                    <Tooltip role="alert">{errors.email}</Tooltip>
+                  )}
+                </FloatingInputContainer>
+                <FloatingInputContainer>
+                  <FloatingLabel active={!!customer.phone}>
+                    {customer.phone ? "Phone" : "Your phone number"}
+                  </FloatingLabel>
+                  <InputField
                     id="phone"
                     name="phone"
                     type="tel"
                     value={customer.phone}
                     onChange={handleCustomerChange}
-                    placeholder="Your phone number"
+                    placeholder=" "
                     aria-required="true"
                     aria-invalid={errors.phone ? "true" : "false"}
                     error={!!errors.phone}
                   />
-                  <Tooltip role="tooltip">
-                    {errors.phone ? errors.phone : "Enter your phone number"}
-                  </Tooltip>
-                </InputContainer>
-                <InputContainer>
-                  <label htmlFor="address">Delivery Address:</label>
-                  <TextArea
+                  {errors.phone && (
+                    <Tooltip role="alert">{errors.phone}</Tooltip>
+                  )}
+                </FloatingInputContainer>
+                <FloatingInputContainer>
+                  <FloatingLabel active={!!customer.address}>
+                    {customer.address ? "Address" : "Your delivery address"}
+                  </FloatingLabel>
+                  <TextAreaField
                     id="address"
                     name="address"
                     value={customer.address}
                     onChange={handleCustomerChange}
-                    placeholder="Your delivery address"
+                    placeholder=" "
                     rows={3}
                     aria-required="true"
                     aria-invalid={errors.address ? "true" : "false"}
                     error={!!errors.address}
                   />
-                  <Tooltip role="tooltip">
-                    {errors.address
-                      ? errors.address
-                      : "Enter your delivery address"}
-                  </Tooltip>
-                </InputContainer>
+                  {errors.address && (
+                    <Tooltip role="alert">{errors.address}</Tooltip>
+                  )}
+                </FloatingInputContainer>
                 <div
-                  style={{
-                    marginTop: "1rem",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
+                  style={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <Button
                     onClick={prevStep}
@@ -591,51 +1030,90 @@ const OrderForm = () => {
                 tabIndex={-1}
                 ref={stepSectionRef}
               >
-                <h2 id="order-summary-heading" style={{ color: "#2e7d32" }}>
+                <h2 id="order-summary-heading" style={{ color: "#5d4037" }}>
                   Order Summary
                 </h2>
-                <div style={{ marginBottom: "1rem" }}>
+                <div
+                  style={{
+                    marginBottom: "1rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.5rem",
+                    background: "#fafafa",
+                    padding: "1rem",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                  }}
+                >
                   <p>
+                    <span role="img" aria-label="product">
+                      🍵
+                    </span>{" "}
                     <strong>Product:</strong> Nutcha Bites
                   </p>
                   <p>
+                    <span role="img" aria-label="size">
+                      📏
+                    </span>{" "}
                     <strong>Size:</strong> {product.size}
                   </p>
                   <p>
+                    <span role="img" aria-label="quantity">
+                      🔢
+                    </span>{" "}
                     <strong>Quantity:</strong> {product.quantity}
                   </p>
                   <p>
-                    <strong>Price:</strong> ${product.price * product.quantity}
-                  </p>
-                </div>
-                <div style={{ marginBottom: "1rem" }}>
-                  <h3>Customer Details</h3>
-                  <p>
-                    <strong>Name:</strong> {customer.name}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {customer.email}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> {customer.phone}
-                  </p>
-                  <p>
-                    <strong>Address:</strong> {customer.address}
+                    <span role="img" aria-label="price">
+                      💲
+                    </span>{" "}
+                    <strong>Price:</strong> $
+                    {(product.price * product.quantity).toFixed(2)}
                   </p>
                 </div>
                 <div
                   style={{
-                    marginTop: "1rem",
-                    display: "flex",
-                    justifyContent: "space-between",
+                    marginBottom: "1rem",
+                    background: "#fafafa",
+                    padding: "1rem",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
                   }}
                 >
-                  <Button
-                    onClick={prevStep}
-                    aria-label="Return to customer information"
+                  <h3
+                    style={{
+                      borderBottom: "1px solid #eee",
+                      paddingBottom: "0.5rem",
+                    }}
                   >
-                    Previous
-                  </Button>
+                    Customer Details
+                  </h3>
+                  <p>
+                    <span role="img" aria-label="name">
+                      👤
+                    </span>{" "}
+                    <strong>Name:</strong> {customer.name}
+                  </p>
+                  <p>
+                    <span role="img" aria-label="email">
+                      📧
+                    </span>{" "}
+                    <strong>Email:</strong> {customer.email}
+                  </p>
+                  <p>
+                    <span role="img" aria-label="phone">
+                      📞
+                    </span>{" "}
+                    <strong>Phone:</strong> {customer.phone}
+                  </p>
+                  <p>
+                    <span role="img" aria-label="address">
+                      🏠
+                    </span>{" "}
+                    <strong>Address:</strong> {customer.address}
+                  </p>
+                </div>
+                <StickyButtonContainer>
                   <Button
                     primary
                     onClick={confirmOrder}
@@ -643,26 +1121,50 @@ const OrderForm = () => {
                   >
                     Confirm Order
                   </Button>
-                </div>
+                </StickyButtonContainer>
               </StepSection>
             )}
           </>
-        ) : (
-          <StepSection
-            role="region"
-            aria-labelledby="order-confirmation-heading"
-            tabIndex={-1}
-            ref={stepSectionRef}
-            style={{ textAlign: "center" }}
-          >
-            <h2 id="order-confirmation-heading" style={{ color: "#2e7d32" }}>
-              Thank You for Your Order!
-            </h2>
+        ) : null}
+      </FormContainer>
+      {toast && <ToastNotification>{toast}</ToastNotification>}
+      <Steam aria-hidden="true" />
+
+      {/* Order Confirmation Modal */}
+      {orderConfirmed && (
+        <ModalOverlay role="dialog" aria-modal="true">
+          <ModalContent>
+            <h2 style={{ color: "#5d4037" }}>Thank You for Your Order!</h2>
             <p>
-              Your order reference is <strong>{orderRef}</strong>
+              Your order reference is{" "}
+              <strong style={{ color: "#8bc34a", fontSize: "1.5rem" }}>
+                {orderRef}
+              </strong>
             </p>
             <p>A confirmation email has been sent to {customer.email}.</p>
-            <div style={{ marginTop: "1rem" }}>
+            {/* Order Tracking Timeline */}
+            <TimelineContainer>
+              {["Placed", "Processing", "Shipped", "Delivered"].map(
+                (stage, index) => (
+                  <TimelineItem key={stage} active={index === 0}>
+                    <TimelineCircle active={index === 0}>
+                      {index === 0 ? "✓" : index + 1}
+                    </TimelineCircle>
+                    <span style={{ fontSize: "0.75rem", marginTop: "4px" }}>
+                      {stage}
+                    </span>
+                  </TimelineItem>
+                )
+              )}
+            </TimelineContainer>
+            <div
+              style={{
+                marginTop: "1rem",
+                display: "flex",
+                justifyContent: "center",
+                gap: "1rem",
+              }}
+            >
               <Button onClick={() => window.print()} aria-label="Print receipt">
                 Print Receipt
               </Button>
@@ -673,13 +1175,27 @@ const OrderForm = () => {
                 Save Receipt
               </Button>
             </div>
-          </StepSection>
-        )}
-      </FormContainer>
-      {/* Decorative animated steam effect */}
-      <Steam aria-hidden="true" />
+            <div style={{ marginTop: "1rem" }}>
+              <Button
+                ref={modalCloseButtonRef}
+                onClick={resetForm}
+                aria-label="Close confirmation and reset form"
+              >
+                Close
+              </Button>
+            </div>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </FormWrapper>
   );
 };
 
-export default OrderForm;
+/* --- Export Wrapped in ErrorBoundary --- */
+const OrderFormWithErrorBoundary: React.FC = () => (
+  <ErrorBoundary>
+    <OrderForm />
+  </ErrorBoundary>
+);
+
+export default OrderFormWithErrorBoundary;
