@@ -94,9 +94,9 @@ const BackToHomeButton = styled.button`
 
 // Main wrapper using a dynamic top padding variable (set based on NavBar height)
 const FormWrapper = styled.div`
-  padding-top: var(--navbar-height, 120px);
+  padding-top: var(--navbar-height, 5em);
   background: #f5f1e6;
-  min-height: 100vh;
+  min-height: 100dvh;
   font-family: "Helvetica Neue", Arial, sans-serif;
   position: relative;
 `;
@@ -828,7 +828,7 @@ const OrderForm: React.FC = () => {
   return (
     <FormWrapper>
       <SkipLink href="#order-form">Skip to Order Form</SkipLink>
-      <BackToHomeButton onClick={goBackHome}>Back to Home</BackToHomeButton>
+
       <VisuallyHidden aria-live="polite">{liveMessage}</VisuallyHidden>
       <FormContainer
         id="order-form"
@@ -841,6 +841,8 @@ const OrderForm: React.FC = () => {
         >
           Nutcha Bites Order Form
         </h1>
+        <BackToHomeButton onClick={goBackHome}>Back to Home</BackToHomeButton>
+
         {/* Resume Order Banner */}
         {showResumePrompt && (
           <ResumeBanner>

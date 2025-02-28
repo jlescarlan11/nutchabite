@@ -11,13 +11,10 @@ import Testimonial from "./components/Testimonial";
 import FAQ from "./components/FAQ";
 import ContactNewsletter from "./components/ContactNewsletter";
 import { useEffect, useState } from "react";
-import Header from "./components/Header";
-import ProgressBar from "./components/OrderProgress";
 import ProductSelection from "./components/ProductSelection";
 import CustomerInformation from "./components/CustomerInformation";
 import OrderSummary from "./components/OrderSummary";
 import OrderConfirmation from "./components/OrderConfirmation";
-import { AnimatePresence, motion } from "framer-motion";
 import { useWizard } from "./components/hooks/useWizard";
 import { syncOrders } from "./components/utils/localDB";
 import OrderForm from "./components/OrderForm";
@@ -135,33 +132,9 @@ const App: React.FC = () => {
               </>
             }
           />
+
           <Route
             path="/order"
-            element={
-              <>
-                <div className="min-h-screen bg-gray-50 font-custom">
-                  <Header />
-                  <main role="main" className="container mx-auto p-4">
-                    <ProgressBar steps={steps} currentStep={currentStep} />
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={currentStep}
-                        variants={stepVariants}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                        transition={{ duration: 0.5 }}
-                      >
-                        {renderStep()}
-                      </motion.div>
-                    </AnimatePresence>
-                  </main>
-                </div>
-              </>
-            }
-          />
-          <Route
-            path="/orderForm"
             element={
               <div className="">
                 <NavBar />
