@@ -109,7 +109,7 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
                     focus:outline-none
                   "
                   aria-label="Order Form"
-                  onClick={() => navigate("/order")}
+                  onClick={() => navigate("/orderForm")}
                 >
                   <StoreIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
